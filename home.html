@@ -1,656 +1,584 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Instagram</title>
-    <link rel="stylesheet" href="./sass/vender/bootstrap.css">
     <link rel="stylesheet" href="./sass/vender/bootstrap.min.css">
     <link rel="stylesheet" href="./owlcarousel/owl.theme.default.min.css">
     <link rel="stylesheet" href="./owlcarousel/owl.carousel.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.2/emojionearea.min.css">
-    <link rel="stylesheet" href="./sass/main.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #fff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #262626; }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            position: fixed; left: 0; top: 0; height: 100vh;
+            width: 245px; border-right: 1px solid #dbdbdb;
+            display: flex; flex-direction: column; padding: 12px 0;
+            background: #fff; z-index: 100; transition: width 0.2s;
+        }
+        .sidebar-logo { padding: 16px 16px 8px; margin-bottom: 8px; }
+        .sidebar-logo img { height: 32px; }
+        .sidebar-logo .logo-sm { display: none; }
+        .sidebar nav { flex: 1; overflow-y: auto; }
+        .sidebar nav a {
+            display: flex; align-items: center; gap: 16px;
+            padding: 12px 16px; border-radius: 12px; margin: 2px 8px;
+            text-decoration: none; color: #262626; font-size: 15px;
+            font-weight: 400; transition: background 0.1s;
+        }
+        .sidebar nav a:hover { background: #f2f2f2; font-weight: 600; }
+        .sidebar nav a.active { font-weight: 700; }
+        .sidebar nav a svg, .sidebar nav a img.nav-icon { width: 26px; height: 26px; flex-shrink: 0; }
+        .sidebar nav a .nav-label { white-space: nowrap; }
+        .sidebar-profile-pic { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; }
+        .sidebar-bottom { padding: 8px; border-top: 1px solid #dbdbdb; margin-top: 4px; }
+        .sidebar-bottom a {
+            display: flex; align-items: center; gap: 16px;
+            padding: 12px 16px; border-radius: 12px;
+            text-decoration: none; color: #262626; font-size: 15px;
+        }
+        .sidebar-bottom a:hover { background: #f2f2f2; }
+        .meta-text { font-size: 12px; color: #8e8e8e; padding: 8px 24px; }
+
+        /* More dropdown */
+        .more-menu { position: relative; }
+        .more-dropdown {
+            display: none; position: absolute; bottom: 60px; left: 8px;
+            background: #fff; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+            min-width: 240px; z-index: 200; overflow: hidden;
+        }
+        .more-dropdown.show { display: block; }
+        .more-dropdown a {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 14px 16px; text-decoration: none; color: #262626;
+            font-size: 14px; border-bottom: 1px solid #dbdbdb;
+        }
+        .more-dropdown a:last-child { border: none; }
+        .more-dropdown a:hover { background: #f2f2f2; }
+
+        /* Search panel */
+        .search-panel {
+            display: none; position: fixed; left: 245px; top: 0;
+            width: 397px; height: 100vh; background: #fff;
+            border-right: 1px solid #dbdbdb; z-index: 99;
+            padding: 20px 0; box-shadow: 4px 0 12px rgba(0,0,0,0.06);
+        }
+        .search-panel.show { display: block; }
+        .search-panel h2 { font-size: 24px; font-weight: 700; padding: 0 24px 20px; }
+        .search-input-wrap { position: relative; margin: 0 16px 16px; }
+        .search-input-wrap input {
+            width: 100%; background: #efefef; border: none; border-radius: 8px;
+            padding: 10px 36px 10px 16px; font-size: 14px; outline: none;
+        }
+        .search-input-wrap svg { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-wrap { margin-left: 245px; display: flex; justify-content: center; min-height: 100vh; }
+        .feed-col { width: 470px; padding: 24px 0; }
+        .right-col { width: 320px; padding: 24px 0 24px 32px; }
+
+        /* ===== STORIES ===== */
+        .stories-wrap {
+            display: flex; gap: 14px; overflow-x: auto; padding: 8px 0 16px;
+            scrollbar-width: none; border-bottom: 1px solid #dbdbdb; margin-bottom: 24px;
+        }
+        .stories-wrap::-webkit-scrollbar { display: none; }
+        .story-item { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; flex-shrink: 0; }
+        .story-ring {
+            width: 62px; height: 62px; border-radius: 50%;
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            padding: 2px; display: flex; align-items: center; justify-content: center;
+        }
+        .story-ring.seen { background: #dbdbdb; }
+        .story-ring img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; }
+        .story-item span { font-size: 12px; color: #262626; max-width: 66px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .story-add { position: relative; }
+        .story-add .plus-badge {
+            position: absolute; bottom: 0; right: 0;
+            background: #0095f6; border-radius: 50%; width: 20px; height: 20px;
+            display: flex; align-items: center; justify-content: center;
+            border: 2px solid #fff; color: #fff; font-size: 14px; font-weight: 700;
+        }
+
+        /* ===== POSTS ===== */
+        .post-card { border: 1px solid #dbdbdb; border-radius: 3px; margin-bottom: 24px; background: #fff; }
+        .post-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; }
+        .post-header-left { display: flex; align-items: center; gap: 10px; }
+        .post-header-left img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid transparent; background: linear-gradient(#fff,#fff) padding-box, linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888) border-box; }
+        .post-header-left .post-username { font-size: 14px; font-weight: 600; }
+        .post-header-left .post-location { font-size: 12px; color: #8e8e8e; }
+        .post-header .more-btn { background: none; border: none; cursor: pointer; padding: 4px; font-size: 20px; color: #262626; }
+        .post-image { width: 100%; display: block; aspect-ratio: 1; object-fit: cover; }
+        .post-actions { display: flex; align-items: center; padding: 8px 16px 4px; gap: 16px; }
+        .post-actions button { background: none; border: none; cursor: pointer; padding: 4px; display: flex; align-items: center; }
+        .post-actions button svg { width: 24px; height: 24px; }
+        .post-actions .save-btn { margin-left: auto; }
+        .post-likes { padding: 0 16px 6px; font-size: 14px; font-weight: 600; }
+        .post-caption { padding: 0 16px 6px; font-size: 14px; }
+        .post-caption strong { font-weight: 600; margin-right: 6px; }
+        .post-comments-link { padding: 0 16px 6px; font-size: 14px; color: #8e8e8e; cursor: pointer; }
+        .post-time { padding: 0 16px 12px; font-size: 11px; color: #8e8e8e; text-transform: uppercase; letter-spacing: 0.2px; }
+        .post-add-comment { display: flex; align-items: center; padding: 8px 16px; border-top: 1px solid #dbdbdb; gap: 10px; }
+        .post-add-comment img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+        .post-add-comment input { flex: 1; border: none; outline: none; font-size: 14px; color: #262626; }
+        .post-add-comment input::placeholder { color: #8e8e8e; }
+        .post-add-comment button { background: none; border: none; color: #0095f6; font-weight: 600; font-size: 14px; cursor: pointer; display: none; }
+        .post-add-comment input:focus + button { display: block; }
+
+        /* Liked animation */
+        .like-btn.liked svg { fill: #ed4956; stroke: #ed4956; }
+        .like-btn svg { transition: transform 0.1s; }
+        .like-btn:active svg { transform: scale(1.3); }
+
+        /* ===== RIGHT COLUMN ===== */
+        .right-profile { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .right-profile-left { display: flex; align-items: center; gap: 14px; }
+        .right-profile-left img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+        .right-profile-left .rp-username { font-size: 14px; font-weight: 600; }
+        .right-profile-left .rp-name { font-size: 14px; color: #8e8e8e; }
+        .right-profile a { font-size: 13px; font-weight: 600; color: #0095f6; text-decoration: none; }
+        .suggestions-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .suggestions-title span { font-size: 14px; font-weight: 600; color: #8e8e8e; }
+        .suggestions-title a { font-size: 12px; font-weight: 600; color: #262626; text-decoration: none; }
+        .suggestion-item { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+        .suggestion-left { display: flex; align-items: center; gap: 10px; }
+        .suggestion-left img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .suggestion-left .su-username { font-size: 13px; font-weight: 600; }
+        .suggestion-left .su-reason { font-size: 12px; color: #8e8e8e; }
+        .follow-btn { background: none; border: none; color: #0095f6; font-size: 13px; font-weight: 600; cursor: pointer; }
+        .follow-btn.following { color: #8e8e8e; }
+        .footer-links { margin-top: 24px; }
+        .footer-links a { font-size: 11px; color: #8e8e8e; text-decoration: none; margin-right: 6px; }
+        .footer-links p { font-size: 11px; color: #8e8e8e; margin-top: 8px; }
+
+        /* ===== MOBILE NAV ===== */
+        .mobile-nav {
+            display: none; position: fixed; bottom: 0; left: 0; right: 0;
+            background: #fff; border-top: 1px solid #dbdbdb;
+            padding: 10px 0; z-index: 100;
+        }
+        .mobile-nav-inner { display: flex; justify-content: space-around; align-items: center; }
+        .mobile-nav a { color: #262626; }
+        .mobile-nav a svg { width: 26px; height: 26px; }
+        .mobile-nav-profile img { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; }
+
+        /* ===== MODAL COMMENTS ===== */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 300; align-items: center; justify-content: center; }
+        .modal-overlay.show { display: flex; }
+        .comment-modal { background: #fff; border-radius: 12px; width: 90%; max-width: 860px; height: 80vh; display: flex; overflow: hidden; }
+        .comment-modal-img { flex: 1; background: #000; }
+        .comment-modal-img img { width: 100%; height: 100%; object-fit: contain; }
+        .comment-modal-right { width: 340px; display: flex; flex-direction: column; border-left: 1px solid #dbdbdb; }
+        .comment-modal-header { display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 1px solid #dbdbdb; }
+        .comment-modal-header img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .comment-modal-header span { font-size: 14px; font-weight: 600; }
+        .comment-modal-body { flex: 1; overflow-y: auto; padding: 16px; }
+        .comment-item { display: flex; gap: 10px; margin-bottom: 16px; }
+        .comment-item img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+        .comment-text strong { font-size: 13px; font-weight: 600; margin-right: 4px; }
+        .comment-text span { font-size: 13px; }
+        .comment-time { font-size: 11px; color: #8e8e8e; margin-top: 4px; }
+        .comment-modal-footer { padding: 12px 16px; border-top: 1px solid #dbdbdb; display: flex; gap: 10px; align-items: center; }
+        .comment-modal-footer img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+        .comment-modal-footer input { flex: 1; border: none; outline: none; font-size: 14px; }
+        .comment-modal-footer button { background: none; border: none; color: #0095f6; font-weight: 600; font-size: 14px; cursor: pointer; }
+        .modal-close { position: absolute; top: 16px; right: 16px; background: none; border: none; color: #fff; font-size: 32px; cursor: pointer; z-index: 301; }
+
+        @media (max-width: 1100px) {
+            .right-col { display: none; }
+        }
+        @media (max-width: 768px) {
+            .sidebar { width: 72px; }
+            .sidebar nav a .nav-label, .sidebar-logo img:not(.logo-sm) { display: none; }
+            .sidebar-logo .logo-sm { display: block; }
+            .main-wrap { margin-left: 72px; }
+            .feed-col { width: 100%; max-width: 470px; }
+        }
+        @media (max-width: 576px) {
+            .sidebar { display: none; }
+            .mobile-nav { display: block; }
+            .main-wrap { margin-left: 0; padding-bottom: 60px; }
+        }
+    </style>
 </head>
 <body>
 
-    <div class="post_page">
-        <!--***** nav menu start ****** -->
-        <div class="nav_menu">
-            <div class="fix_top">
-                <!-- nav for big->medium screen -->
-                <div class="nav">
-                    <div class="logo">
-                        <a href="./home.html">
-                            <img class="d-block d-lg-none small-logo" src="./images/instagram.png" alt="logo">
-                            <img class="d-none d-lg-block" src="./images/logo_menu.png" alt="logo">
-                        </a>
-                    </div>
-                    <div class="menu">
-                        <ul>
-                            <li>
-                                <a class="active" href="home.html">
-                                    <img src="./images/accueil.png">
-                                    <span class="d-none d-lg-block ">Início</span>
-                                </a>
-                            </li>
-                            <li id="search_icon">
-                                <a href="#">
-                                    <img src="./images/search.png">
-                                    <span class="d-none d-lg-block search">Pesquisar </span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="./explore.html">
-                                    <img src="./images/compass.png">
-                                    <span class="d-none d-lg-block ">Explorar</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="./reels.html">
-                                    <img src="./images/video.png">
-                                    <span class="d-none d-lg-block ">Reels</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="./messages.html">
-                                    <img src="./images/send.png">
-                                    <span class="d-none d-lg-block ">Mensagens</span>
-                                </a>
-                            </li>
-                            <li class="notification_icon">
-                                <a href="#">
-                                    <img src="./images/love.png">
-                                    <span class="d-none d-lg-block ">Notificações</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" data-bs-toggle="modal" data-bs-target="#create_modal">
-                                    <img src="./images/tab.png">
-                                    <span class="d-none d-lg-block ">Criar</span>
-                                </a>
-
-                            </li>
-                            <li>
-                                <a href="./profile.html">
-                                    <img class="circle story" src="./images/profile_img.jpg">
-                                    <span class="d-none d-lg-block ">Perfil</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="more">
-                        <div class="btn-group dropup">
-                            <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                <img src="./images/menu.png">
-                                <span class="d-none d-lg-block ">Mais</span>
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">
-                                        <span>Configurações</span>
-                                        <img src="./images/reglage.png">
-                                    </a></li>
-                                <li><a class="dropdown-item" href="#">
-                                        <span>Sua atividade</span>
-                                        <img src="./images/history.png">
-                                    </a></li>
-                                <li><a class="dropdown-item" href="#">
-                                        <span>Salvo</span>
-                                        <img src="./images/save-instagram.png">
-                                    </a></li>
-                                <li><a class="dropdown-item" href="#">
-                                        <span>Alterar apar�ncia</span>
-                                        <img src="./images/moon.png">
-                                    </a></li>
-                                <li><a class="dropdown-item" href="#">
-                                        <span>Denunciar um problema</span>
-                                        <img src="./images/problem.png">
-                                    </a></li>
-                                <li><a class="dropdown-item bold_border" href="#">
-                                        <span>Trocar de conta</span>
-                                    </a></li>
-                                <li><a class="dropdown-item" href="./login.html">
-                                        <span>Sair</span>
-                                    </a></li>
-                            </ul>
-                        </div>
-                        <!--  -->
-
-                    </div>
-                </div>
-                <!-- nav for small screen  -->
-                <div class="nav_sm">
-                    <div class="content">
-                        <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                <img class="logo" src="./images/logo_menu.png">
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">
-                                        <span>Seguindo</span>
-                                        <img src="./images/add-friend.png">
-                                    </a>
-                                </li>
-                                <li><a class="dropdown-item" href="#">
-                                        <span>Favoritos</span>
-                                        <img src="./images/star.png">
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="left">
-                            <div class="search_bar">
-                                <div class="input-group">
-                                    <div class="form-outline">
-                                        <div>
-                                            <img src="./images/search.png" alt="search">
-                                        </div>
-                                        <input type="search" id="form1" class="form-control" placeholder="Pesquisar" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="notifications notification_icon">
-                                <a href="./notification.html">
-                                    <img src="./images/love.png">
-                                </a>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-
-                <!-- nav for ex-small screen  -->
-                <div class="nav_xm">
-                    <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            <img class="logo" src="./images/logo_menu.png">
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">
-                                    <span>Seguindo</span>
-                                    <img src="./images/add-friend.png">
-                                </a></li>
-                            <li><a class="dropdown-item" href="#">
-                                    <span>Favoritos</span>
-                                    <img src="./images/star.png">
-                                </a></li>
-                        </ul>
-                    </div>
-                    <div class="left">
-
-                        <img src="./images/send.png">
-                        <a href="./notification.html">
-                            <img class="notification_icon" src="./images/love.png">
-                        </a>
-
-                    </div>
-                </div>
-            </div>
-            <!-- menu in the botton for smal screen  -->
-            <div class="nav_bottom">
-                <a href="./home.html"><img src="./images/accueil.png"></a>
-                <a href="./explore.html"><img src="./images/compass.png"></a>
-                <a href="./reels.html"><img src="./images/video.png"></a>
-                <a href="#" data-bs-toggle="modal" data-bs-target="#create_modal"><img src="./images/tab.png"></a>
-                <a href="profile.html"><img class="circle story" src="./images/profile_img.jpg"></a>
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <img src="./images/logo_menu.png" alt="Instagram">
+        <img class="logo-sm" src="./images/instagram.png" alt="Instagram" style="height:28px">
+    </div>
+    <nav>
+        <a href="./home.html" class="active">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            <span class="nav-label">Página inicial</span>
+        </a>
+        <a href="./reels.html">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+            <span class="nav-label">Reels</span>
+        </a>
+        <a href="./messages.html">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span class="nav-label">Mensagens</span>
+        </a>
+        <a href="#" id="search-toggle">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <span class="nav-label">Pesquisar</span>
+        </a>
+        <a href="./explore.html">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+            <span class="nav-label">Explorar</span>
+        </a>
+        <a href="#" id="notif-toggle">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <span class="nav-label">Notificações</span>
+        </a>
+        <a href="#" id="create-toggle">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            <span class="nav-label">Criar</span>
+        </a>
+        <a href="#">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="9" height="9"/><rect x="13" y="2" width="9" height="9"/><rect x="2" y="13" width="9" height="9"/><rect x="13" y="13" width="9" height="9"/></svg>
+            <span class="nav-label">Painel</span>
+        </a>
+        <a href="./profile.html">
+            <img class="sidebar-profile-pic" src="./images/salvador (1).jpg" alt="Perfil">
+            <span class="nav-label">Perfil</span>
+        </a>
+    </nav>
+    <div class="sidebar-bottom">
+        <div class="more-menu">
+            <a href="#" id="more-toggle">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                <span class="nav-label">Mais</span>
+            </a>
+            <div class="more-dropdown" id="more-dropdown">
+                <a href="#">Configurações</a>
+                <a href="#">Sua atividade</a>
+                <a href="#">Salvo</a>
+                <a href="#">Alternar aparência</a>
+                <a href="#">Denunciar um problema</a>
+                <a href="#" style="border-top: 8px solid #dbdbdb;">Trocar de conta</a>
+                <a href="./login.html">Sair</a>
             </div>
         </div>
-        <!-- search  -->
-        <div id="search" class="search_section">
-            <h2>Pesquisar</h2>
-            <form method="post">
-                <input type="text" placeholder="Pesquisar">
-            </form>
-            <div class="find">
-                <div class="desc">
-                    <h4>Recentes</h4>
-                    <p><a href="#">Limpar tudo</a></p>
-                </div>
-                <div class="account">
-                    <div class="cart">
-                        <div>
-                            <div class="img">
-                                <img src="./images/profile_img.jpg" alt="">
-                            </div>
-                            <div class="info">
-                                <p class="name">Zineb_essoussi</p>
-                                <p class="second_name">Zim Ess</p>
-                            </div>
-                        </div>
-                        <div class="clear">
-                            <a href="#">X</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- search  -->
-        <!-- notification -->
-        <div id="notification" class="notification_section">
-            <h2>Notificações</h2>
-            <div class="notifications">
-                <div class="notif Seguir_notif">
-                    <div class="cart">
-                        <div>
-                            <div class="img">
-                                <img src="./images/profile_img.jpg" alt="">
-                            </div>
-                            <div class="info">
-                                <p class="name">
-                                    Zineb_essoussi
-                                    <span class="desc">começou a seguir você.</span>
-                                    <span class="time">2h</span>
-                                </p>
+        <a href="#" style="font-size:12px; color:#8e8e8e; padding:8px 24px; display:block;">Também da Meta</a>
+    </div>
+</aside>
 
-                            </div>
-                        </div>
-                        <div class="Seguir_you">
-                            <button class="Seguir_text">Seguir</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="notif Seguir_notif">
-                    <div class="cart">
-                        <div>
-                            <div class="img">
-                                <img src="./images/profile_img.jpg" alt="">
-                            </div>
-                            <div class="info">
-                                <p class="name">
-                                    Zineb_essoussi
-                                    <span class="desc">começou a seguir você.</span>
-                                    <span class="time">2h</span>
-                                </p>
+<!-- SEARCH PANEL -->
+<div class="search-panel" id="search-panel">
+    <h2>Pesquisar</h2>
+    <div class="search-input-wrap">
+        <input type="text" placeholder="Pesquisar">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8e8e8e" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </div>
+    <p style="padding:0 16px;font-size:14px;font-weight:600;color:#262626;">Recentes</p>
+</div>
 
-                            </div>
-                        </div>
-                        <div class="Seguir_you">
-                            <button class="Seguir_text">Seguir</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="notif story_notif">
-                    <div class="cart">
-                        <div>
-                            <div class="img">
-                                <img src="./images/profile_img.jpg" alt="">
-                            </div>
-                            <div class="info">
-                                <div class="info">
-                                    <p class="name">
-                                        Zineb_essoussi
-                                        <span class="desc">curtiu sua história.</span>
-                                        <span class="time">2d</span>
-                                    </p>
+<!-- MAIN -->
+<div class="main-wrap">
+    <div class="feed-col">
 
-                                </div>
-                            </div>
-                        </div>
-                        <div class="story_like">
-                            <img src="./images/img2.jpg" alt="">
-                        </div>
-                    </div>
-                </div>
-                <div class="notif Seguir_notif">
-                    <div class="cart">
-                        <div>
-                            <div class="img">
-                                <img src="./images/profile_img.jpg" alt="">
-                            </div>
-                            <div class="info">
-                                <p class="name">
-                                    Zineb_essoussi
-                                    <span class="desc">começou a seguir você.</span>
-                                    <span class="time">2h</span>
-                                </p>
+        <!-- STORIES -->
+        <div class="stories-wrap" id="stories-wrap"></div>
 
-                            </div>
-                        </div>
-                        <div class="Seguir_you">
-                            <button class="Seguir_text">Seguir</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="notif story_notif">
-                    <div class="cart">
-                        <div>
-                            <div class="img">
-                                <img src="./images/profile_img.jpg" alt="">
-                            </div>
-                            <div class="info">
-                                <div class="info">
-                                    <p class="name">
-                                        Zineb_essoussi
-                                        <span class="desc">curtiu sua história.</span>
-                                        <span class="time">2d</span>
-                                    </p>
-
-                                </div>
-                            </div>
-                        </div>
-                        <div class="story_like">
-                            <img src="./images/img2.jpg" alt="">
-                        </div>
-                    </div>
-                </div>
-                <div class="notif Seguir_notif">
-                    <div class="cart">
-                        <div>
-                            <div class="img">
-                                <img src="./images/profile_img.jpg" alt="">
-                            </div>
-                            <div class="info">
-                                <p class="name">
-                                    Zineb_essoussi
-                                    <span class="desc">começou a seguir você.</span>
-                                    <span class="time">2h</span>
-                                </p>
-
-                            </div>
-                        </div>
-                        <div class="Seguir_you">
-                            <button class="Seguir_text">Seguir</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!--***** nav menu end ****** -->
-
-        <div class="second_container">
-            <!--***** posts_container start ****** -->
-            <div class="main_section">
-                <div class="posts_container">
-                    <div class="stories">
-                        <div class="owl-carousel items">
-                        </div>
-                    </div>
-
-                    <div class="posts">
-                    </div>
-
-                </div>
-            </div>
-            <!--***** posts_container end ****** -->
-
-            <!--***** Seguirers_container start ****** -->
-            <div class="Seguirers_container">
-                <div>
-                    <div class="cart">
-                        <div>
-                            <div class="img">
-                                <img src="./images/profile_img.jpg" alt="">
-                            </div>
-                            <div class="info">
-                                <p class="name">Zineb_essoussi</p>
-                                <p class="second_name">Zim Ess</p>
-                            </div>
-                        </div>
-                        <div class="switch">
-                            <a href="#">Trocar</a>
-                        </div>
-                    </div>
-                    <div class="suggestions">
-                        <div class="title">
-                            <h4>Sugestões para você</h4>
-                            <a class="dark" href="#">Ver tudo</a>
-                        </div>
-                        <div class="cart">
-                            <div>
-                                <div class="img">
-                                    <img src="./images/profile_img.jpg" alt="">
-                                </div>
-                                <div class="info">
-                                    <p class="name">Zineb_essoussi</p>
-                                    <p class="second_name">Zim Ess</p>
-                                </div>
-                            </div>
-                            <div class="switch">
-                                <button class="Seguir_text" href="#">Seguir</button>
-                            </div>
-                        </div>
-                        <div class="cart">
-                            <div>
-                                <div class="img">
-                                    <img src="./images/profile_img.jpg" alt="">
-                                </div>
-                                <div class="info">
-                                    <p class="name">Zineb_essoussi</p>
-                                    <p class="second_name">Zim Ess</p>
-                                </div>
-                            </div>
-                            <div class="switch">
-                                <button class="Seguir_text" href="#">Seguir</button>
-                            </div>
-                        </div>
-                        <div class="cart">
-                            <div>
-                                <div class="img">
-                                    <img src="./images/profile_img.jpg" alt="">
-                                </div>
-                                <div class="info">
-                                    <p class="name">Zineb_essoussi</p>
-                                    <p class="second_name">Zim Ess</p>
-                                </div>
-                            </div>
-                            <div class="switch">
-                                <button class="Seguir_text" href="#">Seguir</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!--***** Seguirers_container end ****** -->
-
-        </div>
-
-        <!-- Modal for sending posts-->
-        <div class="modal fade" id="send_message_modal" tabindex="-1" aria-labelledby="exampleModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">Compartilhar</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="send">
-                            <div class="search_person">
-                                <p>Para:</p>
-                                <input type="text" placeholder="Pesquisar">
-                            </div>
-                            <p>Sugeridos</p>
-                            <div class="poeple">
-                                <div class="person">
-                                    <div class="d-flex">
-                                        <div class="img">
-                                            <img src="./images/profile_img.jpg" alt="">
-                                        </div>
-                                        <div class="content">
-                                            <div class="person">
-                                                <h4>Nome do usuário</h4>
-                                                <span>zim ess</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <di class="circle">
-                                        <span></span>
-                                </div>
-                            </div>
-                            <div class="person">
-                                <div class="d-flex">
-                                    <div class="img">
-                                        <img src="./images/profile_img.jpg" alt="">
-                                    </div>
-                                    <div class="content">
-                                        <div class="person">
-                                            <h4>Nome do usuário</h4>
-                                            <span>zim ess</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="circle">
-                                    <span></span>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-primary">Enviar</button>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- Modal for add messages-->
-        <div class="modal fade" id="message_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">Comentários</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="comments">
-                            <div class="comment">
-                                <div class="d-flex">
-                                    <div class="img">
-                                        <img src="./images/profile_img.jpg" alt="">
-                                    </div>
-                                    <div class="content">
-                                        <div class="person">
-                                            <h4>Nome do usuário</h4>
-                                            <span>3j</span>
-                                        </div>
-                                        <p>Foto incrível</p>
-                                        <div class="responder">
-                                            <button class="responder">responder</button>
-                                            <button class="translation">ver tradução</button>
-                                        </div>
-                                        <div class="answers">
-                                            <button class="see_comment">
-                                                <span class="hide_com">Ocultar todas as respostas</span>
-                                                <span class="show_c"> <span class="line"></span> Ver as <span> 1
-                                                    </span> respostas</span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="like">
-                                    <img class="not_loved" src="./images/love.png" alt="">
-                                    <img class="loved" src="./images/heart.png" alt="">
-                                    <p> 55</p>
-                                </div>
-                            </div>
-                            <div class="responses">
-                                <div class="response comment">
-                                    <div class="d-flex">
-                                        <div class="img">
-                                            <img src="./images/profile_img.jpg" alt="">
-                                        </div>
-                                        <div class="content">
-                                            <div class="person">
-                                                <h4>Nome do usuário</h4>
-                                                <span>3j</span>
-                                            </div>
-                                            <p>Foto incrível</p>
-                                            <div class="responder">
-                                                <button>responder</button>
-                                                <button>ver tradução</button>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                    <div class="like">
-                                        <img class="not_loved" src="./images/love.png" alt="">
-                                        <img class="loved" src="./images/heart.png" alt="">
-                                        <p> 55</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <form method="post">
-                            <div class="input">
-                                <img src="./images/profile_img.jpg" alt="">
-                                <input type="text" id="emoji_comment" placeholder="Adicionar um comentário..." />
-                            </div>
-                            <!-- <div class="emogi">
-                                <img src="./images/emogi.png" alt="">
-                            </div> -->
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!--Criar model-->
-        <div class="modal fade" id="create_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title w-100 fs-5 d-flex align-items-end justify-content-between"
-                            id="exampleModalLabel">
-                            <span class="title_create">Criar nova publicação</span>
-                            <button class="next_btn_post btn_link"></button>
-                        </h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <img class="up_load" src="./images/upload.png" alt="upload">
-                        <p>Arraste fotos e vídeos aqui</p>
-                        <button class="btn btn-primary btn_upload">
-                            Selecionar do seu computador
-                            <form id="upload-form">
-                                <input class="input_select" type="file" id="image-upload" name="image-upload">
-                            </form>
-                        </button>
-                        <div id="image-container" class="hide_img">
-                        </div>
-                        <div id="image_description" class="hide_img">
-                            <div class="img_p"></div>
-                            <div class="description">
-                                <div class="cart">
-                                    <div>
-                                        <div class="img">
-                                            <img src="./images/profile_img.jpg">
-                                        </div>
-                                        <div class="info">
-                                            <p class="name">Zineb_essoussi</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <form>
-                                    <textarea type="text" id="emoji_create" placeholder="escreva seu e-mail"></textarea>
-                                </form>
-                            </div>
-                        </div>
-                        <div class="post_published hide_img">
-                            <img src="./images/uploaded_post.gif" alt="">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!-- POSTS -->
+        <div id="posts-container"></div>
 
     </div>
+    <div class="right-col">
+        <div class="right-profile">
+            <div class="right-profile-left">
+                <img src="./images/salvador (1).jpg" alt="perfil">
+                <div>
+                    <div class="rp-username">heitorsalvador100</div>
+                    <div class="rp-name">JaQuee&Salvador</div>
+                </div>
+            </div>
+            <a href="./profile.html">Trocar</a>
+        </div>
+        <div class="suggestions-title">
+            <span>Sugestões para você</span>
+            <a href="#">Ver tudo</a>
+        </div>
+        <div id="suggestions-list"></div>
+        <div class="footer-links">
+            <a href="#">Sobre</a><a href="#">Ajuda</a><a href="#">Imprensa</a><a href="#">API</a>
+            <a href="#">Carreiras</a><a href="#">Privacidade</a><a href="#">Termos</a>
+            <p>© 2026 INSTAGRAM FROM META</p>
+        </div>
+    </div>
+</div>
 
-    <!-- <script src="./sass/vender/bootstrap.bundle.js"></script>
-    <script src="./sass/vender/bootstrap.bundle.min.js"></script> -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js" integrity="sha384-zYPOMqeu1DAVkHiLqWBUTcbYfZ8osu1Nd6Z89ify25QV9guujx43ITvfi12/QExE" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js" integrity="sha384-Y4oOpwW3duJdCWv5ly8SCFYWqFDsfob/3GkgExXKV4idmbt98QcxXYs9UoXAB7BZ" crossorigin="anonymous"></script>
-    <script src="./owlcarousel/jquery.min.js"></script>
-    <script src="./owlcarousel/owl.carousel.min.js"></script>
-    <script src="./js/carousel.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.2/emojionearea.min.js"></script>
-    <script src="./js/main.js"></script>
+<!-- MOBILE NAV -->
+<div class="mobile-nav">
+    <div class="mobile-nav-inner">
+        <a href="./home.html"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></a>
+        <a href="./explore.html"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></a>
+        <a href="./reels.html"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg></a>
+        <a href="./messages.html"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></a>
+        <a href="./profile.html" class="mobile-nav-profile"><img src="./images/salvador (1).jpg" alt="perfil"></a>
+    </div>
+</div>
+
+<!-- COMMENT MODAL -->
+<div class="modal-overlay" id="comment-modal">
+    <button class="modal-close" id="modal-close-btn">✕</button>
+    <div class="comment-modal">
+        <div class="comment-modal-img">
+            <img id="modal-post-img" src="" alt="">
+        </div>
+        <div class="comment-modal-right">
+            <div class="comment-modal-header">
+                <img src="./images/salvador (1).jpg" alt="">
+                <span>heitorsalvador100</span>
+            </div>
+            <div class="comment-modal-body" id="modal-comments-body">
+                <div class="comment-item">
+                    <img src="./images/salvador (1).jpg" alt="">
+                    <div class="comment-text">
+                        <strong>heitorsalvador100</strong><span>Curtindo o dia! ☀️</span>
+                        <div class="comment-time">2h</div>
+                    </div>
+                </div>
+            </div>
+            <div class="comment-modal-footer">
+                <img src="./images/salvador (1).jpg" alt="">
+                <input type="text" id="modal-comment-input" placeholder="Adicionar um comentário...">
+                <button id="modal-comment-send">Publicar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="./owlcarousel/jquery.min.js"></script>
+<script>
+const ME = {
+    username: 'heitorsalvador100',
+    name: 'JaQuee&Salvador',
+    pic: './images/salvador (1).jpg'
+};
+
+// Contas fictícias para sugestões e posts misturados
+const accounts = [
+    { username: 'enzo_1', name: 'Enzo', pic: './images/salvador (4).jpg' },
+    { username: 'heitor_jq', name: 'Heitor', pic: './images/salvador (7).jpg' },
+    { username: 'familia_salvador', name: 'Família', pic: './images/salvador (10).jpg' },
+    { username: 'praia_parana', name: 'Praia Paraná', pic: './images/salvador (13).jpg' },
+    { username: 'pontalle_moveis', name: 'Móveis Pontalle', pic: './images/salvador (16).jpg' },
+];
+
+// Posts do feed
+const posts = [
+    { user: ME, img: './images/salvador (2).jpg', likes: 142, caption: 'Curtindo o dia! ☀️', time: '1h', location: 'Pontal do Paraná, PR', comments: [{u:accounts[0],t:'Que foto incrível!',time:'45min'},{u:accounts[1],t:'🔥🔥',time:'30min'}] },
+    { user: accounts[0], img: './images/salvador (5).jpg', likes: 89, caption: 'Família é tudo ❤️', time: '2h', location: '', comments: [{u:ME,t:'Demais! 😍',time:'1h'}] },
+    { user: ME, img: './images/salvador (8).jpg', likes: 203, caption: 'No trabalho 💪', time: '4h', location: 'Guaratuba, PR', comments: [{u:accounts[2],t:'Mandando bem!',time:'2h'},{u:accounts[3],t:'👊',time:'1h30min'}] },
+    { user: accounts[1], img: './images/salvador (11).jpg', likes: 67, caption: 'Fim de semana na praia 🌊', time: '6h', location: 'Praia de Leste', comments: [{u:ME,t:'Saudades!',time:'5h'}] },
+    { user: ME, img: './images/salvador (14).jpg', likes: 318, caption: 'Bons momentos com a família 🥰', time: '1d', location: '', comments: [{u:accounts[0],t:'Que lindos!!',time:'20h'},{u:accounts[4],t:'❤️❤️❤️',time:'18h'}] },
+    { user: accounts[2], img: './images/salvador (17).jpg', likes: 44, caption: 'Dia de sol ☀️', time: '1d', location: 'Paranaguá, PR', comments: [] },
+    { user: ME, img: './images/salvador (20).jpg', likes: 157, caption: 'Kayak no litoral do Paraná! 🚣', time: '2d', location: 'Litoral do Paraná', comments: [{u:accounts[1],t:'Que aventura!',time:'1d'},{u:accounts[3],t:'Lindo!!',time:'23h'}] },
+    { user: accounts[3], img: './images/salvador (23).jpg', likes: 91, caption: '🌊', time: '3d', location: '', comments: [] },
+];
+
+// STORIES
+const storyData = [
+    { name: 'Seu story', pic: ME.pic, seen: true, isMe: true },
+    { name: 'enzo_1', pic: accounts[0].pic },
+    { name: 'heitor_jq', pic: accounts[1].pic },
+    { name: 'familia_s', pic: accounts[2].pic },
+    { name: 'praia_pr', pic: accounts[3].pic },
+    { name: 'pontalle', pic: accounts[4].pic },
+    { name: 'salvador', pic: './images/salvador (3).jpg' },
+    { name: 'salvador', pic: './images/salvador (6).jpg' },
+];
+
+function renderStories() {
+    const wrap = document.getElementById('stories-wrap');
+    wrap.innerHTML = storyData.map((s, i) => `
+        <div class="story-item ${s.isMe ? 'story-add' : ''}" onclick="openStory(${i})">
+            <div class="story-ring ${s.seen ? 'seen' : ''}">
+                <img src="${s.pic}" alt="${s.name}">
+            </div>
+            ${s.isMe ? '<div class="plus-badge">+</div>' : ''}
+            <span>${s.name}</span>
+        </div>
+    `).join('');
+}
+
+// Track likes
+const likedPosts = {};
+
+function renderPosts() {
+    const container = document.getElementById('posts-container');
+    container.innerHTML = posts.map((p, i) => `
+        <div class="post-card" id="post-${i}">
+            <div class="post-header">
+                <div class="post-header-left">
+                    <img src="${p.user.pic}" alt="${p.user.username}">
+                    <div>
+                        <div class="post-username">${p.user.username}</div>
+                        ${p.location ? `<div class="post-location">${p.location}</div>` : ''}
+                    </div>
+                </div>
+                <button class="more-btn" onclick="showMoreMenu(${i})">···</button>
+            </div>
+            <img class="post-image" src="${p.img}" alt="" ondblclick="likePost(${i})">
+            <div class="post-actions">
+                <button class="like-btn ${likedPosts[i] ? 'liked' : ''}" id="like-btn-${i}" onclick="likePost(${i})">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${likedPosts[i] ? '#ed4956' : 'none'}" stroke="${likedPosts[i] ? '#ed4956' : 'currentColor'}" stroke-width="2">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    </svg>
+                </button>
+                <button onclick="openCommentModal(${i})">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </button>
+                <button>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                </button>
+                <button class="save-btn" id="save-btn-${i}" onclick="savePost(${i})">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="19 21 12 16 5 21 5 3 19 3 19 21"/></svg>
+                </button>
+            </div>
+            <div class="post-likes" id="likes-count-${i}">${p.likes + (likedPosts[i] ? 1 : 0)} curtidas</div>
+            <div class="post-caption"><strong>${p.user.username}</strong>${p.caption}</div>
+            ${p.comments.length > 0 ? `<div class="post-comments-link" onclick="openCommentModal(${i})">Ver todos os ${p.comments.length} comentários</div>` : ''}
+            <div class="post-time">${p.time}</div>
+            <div class="post-add-comment">
+                <img src="${ME.pic}" alt="">
+                <input type="text" placeholder="Adicionar um comentário..." id="comment-input-${i}" onkeydown="if(event.key==='Enter')addComment(${i})">
+                <button onclick="addComment(${i})">Publicar</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function likePost(i) {
+    likedPosts[i] = !likedPosts[i];
+    const btn = document.getElementById(`like-btn-${i}`);
+    const count = document.getElementById(`likes-count-${i}`);
+    const total = posts[i].likes + (likedPosts[i] ? 1 : 0);
+    count.textContent = `${total} curtidas`;
+    btn.className = `like-btn ${likedPosts[i] ? 'liked' : ''}`;
+    btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${likedPosts[i] ? '#ed4956' : 'none'}" stroke="${likedPosts[i] ? '#ed4956' : 'currentColor'}" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
+    // Heart animation on double click
+    if (likedPosts[i]) {
+        showHeartAnim(i);
+    }
+}
+
+function showHeartAnim(i) {
+    const card = document.getElementById(`post-${i}`);
+    const heart = document.createElement('div');
+    heart.innerHTML = '❤️';
+    heart.style.cssText = 'position:absolute;font-size:80px;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);transition:all 0.3s;pointer-events:none;z-index:10;';
+    card.style.position = 'relative';
+    card.appendChild(heart);
+    setTimeout(() => heart.style.transform = 'translate(-50%,-50%) scale(1)', 10);
+    setTimeout(() => { heart.style.opacity = '0'; setTimeout(() => heart.remove(), 300); }, 700);
+}
+
+const savedPosts = {};
+function savePost(i) {
+    savedPosts[i] = !savedPosts[i];
+    const btn = document.getElementById(`save-btn-${i}`);
+    btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${savedPosts[i] ? '#262626' : 'none'}" stroke="currentColor" stroke-width="2"><polygon points="19 21 12 16 5 21 5 3 19 3 19 21"/></svg>`;
+}
+
+function addComment(i) {
+    const input = document.getElementById(`comment-input-${i}`);
+    const text = input.value.trim();
+    if (!text) return;
+    posts[i].comments.push({ u: ME, t: text, time: 'agora' });
+    input.value = '';
+    renderPosts();
+}
+
+// Comment Modal
+let currentPostIndex = 0;
+function openCommentModal(i) {
+    currentPostIndex = i;
+    const p = posts[i];
+    document.getElementById('modal-post-img').src = p.img;
+    const body = document.getElementById('modal-comments-body');
+    body.innerHTML = [
+        { u: p.user, t: p.caption, time: p.time },
+        ...p.comments.map(c => ({ u: c.u, t: c.t, time: c.time }))
+    ].map(c => `
+        <div class="comment-item">
+            <img src="${c.u.pic}" alt="">
+            <div class="comment-text">
+                <strong>${c.u.username}</strong><span>${c.t}</span>
+                <div class="comment-time">${c.time}</div>
+            </div>
+        </div>
+    `).join('');
+    document.getElementById('comment-modal').classList.add('show');
+}
+
+document.getElementById('modal-close-btn').onclick = () => document.getElementById('comment-modal').classList.remove('show');
+document.getElementById('comment-modal').onclick = function(e) { if(e.target===this) this.classList.remove('show'); };
+document.getElementById('modal-comment-send').onclick = () => {
+    const input = document.getElementById('modal-comment-input');
+    const text = input.value.trim();
+    if (!text) return;
+    posts[currentPostIndex].comments.push({ u: ME, t: text, time: 'agora' });
+    input.value = '';
+    openCommentModal(currentPostIndex);
+};
+
+// Suggestions
+function renderSuggestions() {
+    const list = document.getElementById('suggestions-list');
+    const following = {};
+    list.innerHTML = accounts.map((a, i) => `
+        <div class="suggestion-item">
+            <div class="suggestion-left">
+                <img src="${a.pic}" alt="${a.username}">
+                <div>
+                    <div class="su-username">${a.username}</div>
+                    <div class="su-reason">Sugerido para você</div>
+                </div>
+            </div>
+            <button class="follow-btn" id="follow-${i}" onclick="toggleFollow(${i})">${following[i] ? 'Seguindo' : 'Seguir'}</button>
+        </div>
+    `).join('');
+}
+
+const followState = {};
+function toggleFollow(i) {
+    followState[i] = !followState[i];
+    const btn = document.getElementById(`follow-${i}`);
+    btn.textContent = followState[i] ? 'Seguindo' : 'Seguir';
+    btn.className = `follow-btn ${followState[i] ? 'following' : ''}`;
+}
+
+// Search toggle
+document.getElementById('search-toggle').onclick = (e) => {
+    e.preventDefault();
+    document.getElementById('search-panel').classList.toggle('show');
+};
+
+// More dropdown
+document.getElementById('more-toggle').onclick = (e) => {
+    e.preventDefault();
+    document.getElementById('more-dropdown').classList.toggle('show');
+};
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.more-menu')) document.getElementById('more-dropdown').classList.remove('show');
+    if (!e.target.closest('#search-toggle') && !e.target.closest('#search-panel')) document.getElementById('search-panel').classList.remove('show');
+});
+
+function openStory(i) { alert('Story de ' + storyData[i].name); }
+function showMoreMenu(i) { /* menu de opções do post */ }
+
+// INIT
+renderStories();
+renderPosts();
+renderSuggestions();
+</script>
 </body>
-
 </html>

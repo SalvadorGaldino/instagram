@@ -12,7 +12,257 @@
     <link rel="stylesheet" href="./owlcarousel/owl.carousel.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.2/emojionearea.min.css">
     <link rel="stylesheet" href="./sass/main.css">
+
+    <style>
+        /* ===== FOTO DE PERFIL: redonda (não oval) ===== */
+        .profile_container .profile_info .cart .img img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50% !important;
+            object-fit: cover;
+        }
+
+        /* ===== GRID DE POSTS: fotos quadradas como Instagram real ===== */
+        .posts_profile .post {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3px !important;
+        }
+
+        .posts_profile .post .item {
+            position: relative;
+            width: 100%;
+            padding-bottom: 100%; /* quadrado */
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .posts_profile .post .item img.item_img {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100% !important;
+            height: 100% !important;
+            max-width: none !important;
+            max-height: none !important;
+            object-fit: cover;
+        }
+
+        /* ===== HOVER: fundo escuro com ❤️ e 💬 ===== */
+        .posts_profile .post .item .hover_overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            z-index: 3;
+            color: white;
+        }
+
+        .posts_profile .post .item:hover .hover_overlay {
+            opacity: 1;
+        }
+
+        .hover_overlay .stat {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            font-size: 16px;
+            color: white;
+        }
+
+        .hover_overlay .stat svg {
+            width: 20px; height: 20px;
+            fill: white;
+        }
+
+        /* ===== STORIES: botão menor, círculo perfeito ===== */
+        .highlights .highlight .img {
+            width: 77px !important;
+            height: 77px !important;
+            border-radius: 50% !important;
+            overflow: hidden;
+            border: 1px solid #dbdbdb;
+            padding: 2px;
+        }
+
+        .highlights .highlight .img img {
+            width: 100% !important;
+            height: 100% !important;
+            border-radius: 50% !important;
+            object-fit: cover;
+        }
+
+        /* ===== BOTÃO MAIS: menor e proporcional ===== */
+        .nav .more .btn {
+            padding: 8px 8px !important;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav .more .btn img {
+            width: 20px !important;
+            height: 20px !important;
+        }
+
+        /* Remove a setinha "dropdown-toggle" que engrossava o botão */
+        .nav .more .btn.dropdown-toggle::after {
+            display: none !important;
+        }
+
+        /* ===== LIGHTBOX DE STORIES ===== */
+        #story_lightbox {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.92);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #story_lightbox.active {
+            display: flex;
+        }
+
+        #story_lightbox .story_box {
+            position: relative;
+            width: 390px;
+            max-width: 95vw;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        #story_lightbox .story_box img,
+        #story_lightbox .story_box video {
+            width: 100%;
+            max-height: 80vh;
+            object-fit: contain;
+            display: block;
+        }
+
+        #story_lightbox .story_header {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
+            z-index: 2;
+        }
+
+        #story_lightbox .story_header img {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #e1306c;
+        }
+
+        #story_lightbox .story_header span {
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        #story_lightbox .story_progress {
+            position: absolute;
+            top: 8px; left: 8px; right: 8px;
+            height: 2px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 2px;
+            z-index: 3;
+        }
+
+        #story_lightbox .story_progress .bar {
+            height: 100%;
+            width: 0%;
+            background: white;
+            border-radius: 2px;
+            animation: story_fill 5s linear forwards;
+        }
+
+        @keyframes story_fill {
+            from { width: 0%; }
+            to   { width: 100%; }
+        }
+
+        #story_lightbox .close_story {
+            position: absolute;
+            top: 10px; right: 14px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 26px;
+            cursor: pointer;
+            z-index: 10;
+            line-height: 1;
+        }
+
+        #story_lightbox .story_footer {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            padding: 12px 14px;
+            background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #story_lightbox .story_footer input {
+            flex: 1;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 20px;
+            padding: 8px 14px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+        }
+
+        #story_lightbox .story_footer input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+
+        #story_lightbox .story_footer .heart_btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        #story_lightbox .story_footer .heart_btn svg {
+            width: 24px; height: 24px;
+            fill: white;
+        }
+
+        /* ===== FOTO NO MENU (circle) sempre redonda ===== */
+        .nav .menu ul li a img.circle,
+        .nav_bottom img.circle {
+            border-radius: 50% !important;
+            width: 26px !important;
+            height: 26px !important;
+            object-fit: cover;
+        }
+
+        /* ===== Pequeno ajuste: foto de perfil no mobile ===== */
+        @media (max-width: 576px) {
+            .profile_container .profile_info .cart .img img {
+                width: 90px;
+                height: 90px;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
     <div class="post_page">
@@ -70,7 +320,6 @@
                                     <img src="./images/tab.png">
                                     <span class="d-none d-lg-block ">Criar</span>
                                 </a>
-
                             </li>
                             <li>
                                 <a href="./profile.html">
@@ -116,8 +365,6 @@
                                     </a></li>
                             </ul>
                         </div>
-                        <!--  -->
-
                     </div>
                 </div>
                 <!-- nav for small screen  -->
@@ -155,7 +402,6 @@
                                      <img src="./images/love.png">
                                 </a>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -179,25 +425,24 @@
                         </ul>
                     </div>
                     <div class="left">
-                        
                         <img src="./images/send.png">
                         <a href="./notification.html">
                             <img class="notification_icon" src="./images/love.png">
                         </a>
-                        
                     </div>
                 </div>
             </div>
-            <!-- menu in the botton for smal screen  -->
+            <!-- menu bottom para tela pequena -->
             <div class="nav_bottom">
                 <a href="./home.html"><img src="./images/accueil.png"></a>
                 <a href="./explore.html"><img src="./images/compass.png"></a>
                 <a href="./reels.html"><img src="./images/video.png"></a>
-                <a  href="#" data-bs-toggle="modal" data-bs-target="#create_modal"><img src="./images/tab.png"></a>
+                <a href="#" data-bs-toggle="modal" data-bs-target="#create_modal"><img src="./images/tab.png"></a>
                 <a href="profile.html"><img class="circle story" src="./images/salvador (1).jpg"></a>
             </div>
         </div>
-        <!-- search  -->
+
+        <!-- search -->
         <div id="search" class="search_section">
             <h2>Pesquisar</h2>
             <form method="post">
@@ -216,7 +461,7 @@
                             </div>
                             <div class="info">
                                 <p class="name">heitorsalvador100</p>
-                                <p class="second_name">JaQuee&Salvador</p>
+                                <p class="second_name">JaQuee&amp;Salvador</p>
                             </div>
                         </div>
                         <div class="clear">
@@ -226,7 +471,7 @@
                 </div>
             </div>
         </div>
-        <!-- search  -->
+
         <!-- notification -->
         <div id="notification" class="notification_section">
             <h2>Notificações</h2>
@@ -234,125 +479,34 @@
                 <div class="notif Seguir_notif">
                     <div class="cart">
                         <div>
-                            <div class="img">
-                                <img src="./images/salvador (1).jpg" alt="">
-                            </div>
+                            <div class="img"><img src="./images/salvador (1).jpg" alt=""></div>
                             <div class="info">
-                                <p class="name">
-                                    heitorsalvador100
-                                    <span class="desc">começou a seguir você.</span>
-                                    <span class="time">2h</span>
-                                </p>
-
+                                <p class="name">heitorsalvador100 <span class="desc">começou a seguir você.</span> <span class="time">2h</span></p>
                             </div>
                         </div>
-                        <div class="Seguir_you">
-                            <button class="Seguir_text">Seguir</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="notif Seguir_notif">
-                    <div class="cart">
-                        <div>
-                            <div class="img">
-                                <img src="./images/salvador (1).jpg" alt="">
-                            </div>
-                            <div class="info">
-                                <p class="name">
-                                    heitorsalvador100
-                                    <span class="desc">começou a seguir você.</span>
-                                    <span class="time">2h</span>
-                                </p>
-
-                            </div>
-                        </div>
-                        <div class="Seguir_you">
-                            <button class="Seguir_text">Seguir</button>
-                        </div>
+                        <div class="Seguir_you"><button class="Seguir_text">Seguir</button></div>
                     </div>
                 </div>
                 <div class="notif story_notif">
                     <div class="cart">
                         <div>
-                            <div class="img">
-                                <img src="./images/salvador (1).jpg" alt="">
-                            </div>
+                            <div class="img"><img src="./images/salvador (1).jpg" alt=""></div>
                             <div class="info">
-                                <div class="info">
-                                    <p class="name">
-                                        heitorsalvador100
-                                        <span class="desc">curtiu sua história.</span>
-                                        <span class="time">2d</span>
-                                    </p>
-
-                                </div>
+                                <p class="name">heitorsalvador100 <span class="desc">curtiu sua história.</span> <span class="time">2d</span></p>
                             </div>
                         </div>
-                        <div class="story_like">
-                            <img src="./images/salvador (2).jpg" alt="">
-                        </div>
+                        <div class="story_like"><img src="./images/salvador (2).jpg" alt=""></div>
                     </div>
                 </div>
                 <div class="notif Seguir_notif">
                     <div class="cart">
                         <div>
-                            <div class="img">
-                                <img src="./images/salvador (1).jpg" alt="">
-                            </div>
+                            <div class="img"><img src="./images/salvador (1).jpg" alt=""></div>
                             <div class="info">
-                                <p class="name">
-                                    heitorsalvador100
-                                    <span class="desc">começou a seguir você.</span>
-                                    <span class="time">2h</span>
-                                </p>
-
+                                <p class="name">heitorsalvador100 <span class="desc">começou a seguir você.</span> <span class="time">3h</span></p>
                             </div>
                         </div>
-                        <div class="Seguir_you">
-                            <button class="Seguir_text">Seguir</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="notif story_notif">
-                    <div class="cart">
-                        <div>
-                            <div class="img">
-                                <img src="./images/salvador (1).jpg" alt="">
-                            </div>
-                            <div class="info">
-                                <div class="info">
-                                    <p class="name">
-                                        heitorsalvador100
-                                        <span class="desc">curtiu sua história.</span>
-                                        <span class="time">2d</span>
-                                    </p>
-
-                                </div>
-                            </div>
-                        </div>
-                        <div class="story_like">
-                            <img src="./images/salvador (2).jpg" alt="">
-                        </div>
-                    </div>
-                </div>
-                <div class="notif Seguir_notif">
-                    <div class="cart">
-                        <div>
-                            <div class="img">
-                                <img src="./images/salvador (1).jpg" alt="">
-                            </div>
-                            <div class="info">
-                                <p class="name">
-                                    heitorsalvador100
-                                    <span class="desc">começou a seguir você.</span>
-                                    <span class="time">2h</span>
-                                </p>
-
-                            </div>
-                        </div>
-                        <div class="Seguir_you">
-                            <button class="Seguir_text">Seguir</button>
-                        </div>
+                        <div class="Seguir_you"><button class="Seguir_text">Seguir</button></div>
                     </div>
                 </div>
             </div>
@@ -360,46 +514,60 @@
         <!--***** nav menu end ****** -->
 
         <div class="profile_container">
+            <!-- INFO DO PERFIL -->
             <div class="profile_info">
                 <div class="cart">
-                        <div class="img">
-                            <img src="./images/salvador (1).jpg" alt="">
+                    <div class="img">
+                        <img src="./images/salvador (1).jpg" alt="Foto de perfil">
+                    </div>
+                    <div class="info">
+                        <p class="name">
+                            heitorsalvador100
+                            <button class="edit_profile">Editar perfil</button>
+                        </p>
+                        <div class="general_info">
+                            <p><span>92</span> posts</p>
+                            <p><span>11,5 mil</span> Seguidores</p>
+                            <p><span>1.708</span> Seguindo</p>
                         </div>
-                        <div class="info">
-                            <p class="name">
-                                heitorsalvador100
-                                <button class="edit_profile">
-                                    Editar perfil 
-                                </button>
-                            </p>
-                            <div class="general_info">
-                                <p><span>1</span> post</p>
-                                <p><span>177</span> Seguidores</p>
-                                <p><span>137</span> Seguindo</p>
-                            </div>
-                            <p class="nick_name">Zin Ess</p>
-                            <p class="desc">
-                                Sou estudante de engenharia <br>
-                                ENSAO
-                            </p>
-                        </div>
+                        <p class="nick_name">JaQuee&amp;Salvador</p>
+                        <p class="desc">
+                            Advertising/Marketing<br>
+                            💻 Desenvolvedor Web<br>
+                            🌐 Criação de sites institucionais<br>
+                            🤝 Parcerias com desenvolvedores<br>
+                            ✅ Soluções para negócios locais
+                        </p>
+                    </div>
                 </div>
             </div>
+
+            <!-- STORIES / DESTAQUES -->
             <div class="highlights">
-                <div class="highlight">
-                    <div class="img">
-                        <img src="./images/salvador (1).jpg" alt="">
+                <!-- Story clicável: abre lightbox -->
+                <div class="highlight story_trigger" data-img="./images/salvador (3).jpg" data-label="Enzo" style="cursor:pointer;">
+                    <div class="img" style="border: 2px solid #e1306c;">
+                        <img src="./images/salvador (3).jpg" alt="Enzo">
                     </div>
-                    <p>dicas</p>
+                    <p>Enzo</p>
                 </div>
-                <div class="highlight highlight_add">
+                <div class="highlight story_trigger" data-img="./images/salvador (5).jpg" data-label="Heitor" style="cursor:pointer;">
+                    <div class="img" style="border: 2px solid #e1306c;">
+                        <img src="./images/salvador (5).jpg" alt="Heitor">
+                    </div>
+                    <p>Heitor</p>
+                </div>
+                <div class="highlight highlight_add" style="cursor:pointer;">
                     <div class="img">
                         <img src="./images/plus.png" alt="">
                     </div>
                     <p>Novo</p>
                 </div>
             </div>
+
             <hr>
+
+            <!-- TABS DE POSTS -->
             <div class="posts_profile">
                 <ul class="nav-pills w-100 d-flex justify-content-center" id="pills-tab" role="tablist">
                     <li class="nav-item mx-2" role="presentation">
@@ -409,137 +577,98 @@
                         </button>
                     </li>
                     <li class="nav-item mx-2" role="presentation">
-                      <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">
-                        <img src="./images/save-instagram.png" alt="saved posts">
-                        SALVAS
-                      </button>
+                        <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">
+                            <img src="./images/save-instagram.png" alt="saved posts">
+                            SALVAS
+                        </button>
                     </li>
                     <li class="nav-item mx-2" role="presentation">
-                      <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact" aria-selected="false">
-                        <img src="./images/tagged.png" alt="tagged posts">
-                        MARCADAS
-                      </button>
+                        <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact" aria-selected="false">
+                            <img src="./images/tagged.png" alt="tagged posts">
+                            MARCADAS
+                        </button>
                     </li>
-                  </ul>
-                  <div class="tab-content" id="pills-tabContent">
+                </ul>
+
+                <div class="tab-content" id="pills-tabContent">
+                    <!-- PUBLICAÇÕES -->
                     <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" tabindex="0">
                         <div id="posts_sec" class="post">
-                            <div class="item">
-                                <img class="img-fluid item_img" src="./images/salvador (1).jpg" alt="Salvador">
-                            </div>
-                            <div class="item">
-                                <img class="img-fluid item_img" src="./images/salvador (2).jpg" alt="Salvador">
-                            </div>
-                            <div class="item">
-                                <img class="img-fluid item_img" src="./images/salvador (3).jpg" alt="Salvador">
-                            </div>
-                            <div class="item">
-                                <img class="img-fluid item_img" src="./images/salvador (4).jpg" alt="Salvador">
-                            </div>
-                            <div class="item">
-                                <img class="img-fluid item_img" src="./images/salvador (5).jpg" alt="Salvador">
-                            </div>
-                            <div class="item">
-                                <img class="img-fluid item_img" src="./images/salvador (6).jpg" alt="Salvador">
-                            </div>
-                            <div class="item">
-                                <img class="img-fluid item_img" src="./images/salvador (7).jpg" alt="Salvador">
-                            </div>
-                            <div class="item">
-                                <img class="img-fluid item_img" src="./images/salvador (8).jpg" alt="Salvador">
-                            </div>
-                            <div class="item">
-                                <img class="img-fluid item_img" src="./images/salvador (9).jpg" alt="Salvador">
-                            </div>
-                            <div class="item">
-                                <img class="img-fluid item_img" src="./images/salvador (10).jpg" alt="Salvador">
-                            </div>
-                            <div class="item">
-                                <img class="img-fluid item_img" src="./images/salvador (11).jpg" alt="Salvador">
-                            </div>
-                            <div class="item">
-                                <img class="img-fluid item_img" src="./images/salvador (12).jpg" alt="Salvador">
-                            </div>
-                            <div class="item">
-                                <img class="img-fluid item_img" src="./images/salvador (13).jpg" alt="Salvador">
-                            </div>
-                            <div class="item">
-                                <img class="img-fluid item_img" src="./images/salvador (14).jpg" alt="Salvador">
-                            </div>
-                            <div class="item">
-                                <img class="img-fluid item_img" src="./images/salvador (15).jpg" alt="Salvador">
-                            </div>
-                            <div class="item">
-                                <img class="img-fluid item_img" src="./images/salvador (16).jpg" alt="Salvador">
-                            </div>
-                            <div class="item">
-                                <img class="img-fluid item_img" src="./images/salvador (17).jpg" alt="Salvador">
-                            </div>
-                            <div class="item">
-                                <img class="img-fluid item_img" src="./images/salvador (18).jpg" alt="Salvador">
-                            </div>
-                            <div class="item">
-                                <img class="img-fluid item_img" src="./images/salvador (19).jpg" alt="Salvador">
-                            </div>
-                            <div class="item">
-                                <img class="img-fluid item_img" src="./images/salvador (20).jpg" alt="Salvador">
-                            </div>
-                            <div class="item">
-                                <img class="img-fluid item_img" src="./images/salvador (21).jpg" alt="Salvador">
-                            </div>
+                            <div class="item"><img class="item_img" src="./images/salvador (1).jpg" alt="Salvador"><div class="hover_overlay"><span class="stat"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>47</span><span class="stat"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>3</span></div></div>
+                            <div class="item"><img class="item_img" src="./images/salvador (2).jpg" alt="Salvador"><div class="hover_overlay"><span class="stat"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>32</span><span class="stat"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>1</span></div></div>
+                            <div class="item"><img class="item_img" src="./images/salvador (3).jpg" alt="Salvador"><div class="hover_overlay"><span class="stat"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>58</span><span class="stat"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>5</span></div></div>
+                            <div class="item"><img class="item_img" src="./images/salvador (4).jpg" alt="Salvador"><div class="hover_overlay"><span class="stat"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>21</span><span class="stat"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>0</span></div></div>
+                            <div class="item"><img class="item_img" src="./images/salvador (5).jpg" alt="Salvador"><div class="hover_overlay"><span class="stat"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>74</span><span class="stat"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>8</span></div></div>
+                            <div class="item"><img class="item_img" src="./images/salvador (6).jpg" alt="Salvador"><div class="hover_overlay"><span class="stat"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>19</span><span class="stat"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>2</span></div></div>
+                            <div class="item"><img class="item_img" src="./images/salvador (7).jpg" alt="Salvador"><div class="hover_overlay"><span class="stat"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>53</span><span class="stat"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>4</span></div></div>
+                            <div class="item"><img class="item_img" src="./images/salvador (8).jpg" alt="Salvador"><div class="hover_overlay"><span class="stat"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>66</span><span class="stat"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>7</span></div></div>
+                            <div class="item"><img class="item_img" src="./images/salvador (9).jpg" alt="Salvador"><div class="hover_overlay"><span class="stat"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>41</span><span class="stat"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>2</span></div></div>
+                            <div class="item"><img class="item_img" src="./images/salvador (10).jpg" alt="Salvador"><div class="hover_overlay"><span class="stat"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>88</span><span class="stat"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>9</span></div></div>
+                            <div class="item"><img class="item_img" src="./images/salvador (11).jpg" alt="Salvador"><div class="hover_overlay"><span class="stat"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>37</span><span class="stat"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>3</span></div></div>
+                            <div class="item"><img class="item_img" src="./images/salvador (12).jpg" alt="Salvador"><div class="hover_overlay"><span class="stat"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>55</span><span class="stat"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>6</span></div></div>
+                            <div class="item"><img class="item_img" src="./images/salvador (13).jpg" alt="Salvador"><div class="hover_overlay"><span class="stat"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>29</span><span class="stat"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>1</span></div></div>
+                            <div class="item"><img class="item_img" src="./images/salvador (14).jpg" alt="Salvador"><div class="hover_overlay"><span class="stat"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>62</span><span class="stat"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>4</span></div></div>
+                            <div class="item"><img class="item_img" src="./images/salvador (15).jpg" alt="Salvador"><div class="hover_overlay"><span class="stat"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>45</span><span class="stat"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>2</span></div></div>
+                            <div class="item"><img class="item_img" src="./images/salvador (16).jpg" alt="Salvador"><div class="hover_overlay"><span class="stat"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>71</span><span class="stat"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>10</span></div></div>
+                            <div class="item"><img class="item_img" src="./images/salvador (17).jpg" alt="Salvador"><div class="hover_overlay"><span class="stat"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>38</span><span class="stat"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>2</span></div></div>
+                            <div class="item"><img class="item_img" src="./images/salvador (18).jpg" alt="Salvador"><div class="hover_overlay"><span class="stat"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>50</span><span class="stat"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>5</span></div></div>
+                            <div class="item"><img class="item_img" src="./images/salvador (19).jpg" alt="Salvador"><div class="hover_overlay"><span class="stat"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>23</span><span class="stat"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>1</span></div></div>
+                            <div class="item"><img class="item_img" src="./images/salvador (20).jpg" alt="Salvador"><div class="hover_overlay"><span class="stat"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>60</span><span class="stat"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>7</span></div></div>
+                            <div class="item"><img class="item_img" src="./images/salvador (21).jpg" alt="Salvador"><div class="hover_overlay"><span class="stat"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>44</span><span class="stat"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>3</span></div></div>
                         </div>
                     </div>
+
+                    <!-- SALVAS -->
                     <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab" tabindex="0">
                         <div id="saved_sec" class="post">
-                            <div class="item">
-                                <img class="img-fluid item_img" src="./images/salvador (22).jpg" alt="Salvador">
-                            </div>
-                            <div class="item">
-                                <img class="img-fluid item_img" src="./images/salvador (23).jpg" alt="Salvador">
-                            </div>
-                            <div class="item">
-                                <img class="img-fluid item_img" src="./images/salvador (24).jpg" alt="Salvador">
-                            </div>
-                            <div class="item">
-                                <img class="img-fluid item_img" src="./images/salvador (25).jpg" alt="Salvador">
-                            </div>
-                            <div class="item">
-                                <img class="img-fluid item_img" src="./images/salvador (26).jpg" alt="Salvador">
-                            </div>
-                            <div class="item">
-                                <img class="img-fluid item_img" src="./images/salvador (27).jpg" alt="Salvador">
-                            </div>
+                            <div class="item"><img class="item_img" src="./images/salvador (22).jpg" alt="Salvador"><div class="hover_overlay"><span class="stat"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>18</span><span class="stat"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>0</span></div></div>
+                            <div class="item"><img class="item_img" src="./images/salvador (23).jpg" alt="Salvador"><div class="hover_overlay"><span class="stat"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>34</span><span class="stat"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>2</span></div></div>
+                            <div class="item"><img class="item_img" src="./images/salvador (24).jpg" alt="Salvador"><div class="hover_overlay"><span class="stat"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>27</span><span class="stat"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>1</span></div></div>
+                            <div class="item"><img class="item_img" src="./images/salvador (25).jpg" alt="Salvador"><div class="hover_overlay"><span class="stat"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>41</span><span class="stat"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>3</span></div></div>
+                            <div class="item"><img class="item_img" src="./images/salvador (26).jpg" alt="Salvador"><div class="hover_overlay"><span class="stat"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>15</span><span class="stat"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>0</span></div></div>
+                            <div class="item"><img class="item_img" src="./images/salvador (27).jpg" alt="Salvador"><div class="hover_overlay"><span class="stat"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>52</span><span class="stat"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>4</span></div></div>
                         </div>
                     </div>
+
+                    <!-- MARCADAS -->
                     <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab" tabindex="0">
                         <div id="tagged" class="post">
-                            <div class="item">
-                                <img class="img-fluid item_img" src="./images/salvador (28).jpg" alt="Salvador">
-                            </div>
-                            <div class="item">
-                                <img class="img-fluid item_img" src="./images/salvador (29).jpg" alt="Salvador">
-                            </div>
-                            <div class="item">
-                                <img class="img-fluid item_img" src="./images/salvador (30).jpg" alt="Salvador">
-                            </div>
-                            <div class="item">
-                                <img class="img-fluid item_img" src="./images/salvador (31).jpg" alt="Salvador">
-                            </div>
+                            <div class="item"><img class="item_img" src="./images/salvador (28).jpg" alt="Salvador"><div class="hover_overlay"><span class="stat"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>30</span><span class="stat"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>2</span></div></div>
+                            <div class="item"><img class="item_img" src="./images/salvador (29).jpg" alt="Salvador"><div class="hover_overlay"><span class="stat"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>48</span><span class="stat"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>5</span></div></div>
+                            <div class="item"><img class="item_img" src="./images/salvador (30).jpg" alt="Salvador"><div class="hover_overlay"><span class="stat"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>22</span><span class="stat"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>1</span></div></div>
+                            <div class="item"><img class="item_img" src="./images/salvador (31).jpg" alt="Salvador"><div class="hover_overlay"><span class="stat"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>36</span><span class="stat"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>3</span></div></div>
                         </div>
                     </div>
-                    
-                  </div>
+                </div>
             </div>
         </div>
 
+        <!-- LIGHTBOX DE STORY -->
+        <div id="story_lightbox">
+            <div class="story_box">
+                <div class="story_progress"><div class="bar" id="story_bar"></div></div>
+                <div class="story_header">
+                    <img src="./images/salvador (1).jpg" id="story_avatar" alt="">
+                    <span id="story_label">heitorsalvador100</span>
+                    <span style="color:rgba(255,255,255,0.6); font-size:12px; margin-left:6px;">1h</span>
+                </div>
+                <button class="close_story" id="close_story_btn">&times;</button>
+                <img id="story_img" src="" alt="Story">
+                <div class="story_footer">
+                    <input type="text" placeholder="Responder a heitorsalvador100...">
+                    <button class="heart_btn">
+                        <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
 
-        <!--Criar model-->
+        <!-- MODAL CRIAR -->
         <div class="modal fade" id="create_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h1 class="modal-title w-100 fs-5 d-flex align-items-end justify-content-between"
-                            id="exampleModalLabel">
+                        <h1 class="modal-title w-100 fs-5 d-flex align-items-end justify-content-between" id="exampleModalLabel">
                             <span class="title_create">Criar nova publicação</span>
                             <button class="next_btn_post btn_link"></button>
                         </h1>
@@ -554,8 +683,7 @@
                                 <input class="input_select" type="file" id="image-upload" name="image-upload">
                             </form>
                         </button>
-                        <div id="image-container" class="hide_img">
-                        </div>
+                        <div id="image-container" class="hide_img"></div>
                         <div id="image_description" class="hide_img">
                             <div class="img_p"></div>
                             <div class="description">
@@ -582,15 +710,64 @@
             </div>
         </div>
 
-    </div>
+    </div><!-- end post_page -->
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js" integrity="sha384-zYPOMqeu1DAVkHiLqWBUTcbYfZ8osu1Nd6Z89ify25QV9guujx43ITvfi12/QExE" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js" integrity="sha384-Y4oOpwW3duJdCWv5ly8SCFYWqFDsfob/3GkgExXKV4idmbt98QcxXYs9UoXAB7BZ" crossorigin="anonymous"></script>    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js" integrity="sha384-Y4oOpwW3duJdCWv5ly8SCFYWqFDsfob/3GkgExXKV4idmbt98QcxXYs9UoXAB7BZ" crossorigin="anonymous"></script>
     <script src="./owlcarousel/jquery.min.js"></script>
     <script src="./owlcarousel/owl.carousel.min.js"></script>
     <script src="./js/carousel.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.2/emojionearea.min.js"></script>
     <script src="./js/main.js"></script>
-</body>
 
+    <script>
+        // ===== LIGHTBOX DE STORY =====
+        const lightbox    = document.getElementById('story_lightbox');
+        const storyImg    = document.getElementById('story_img');
+        const storyLabel  = document.getElementById('story_label');
+        const storyBar    = document.getElementById('story_bar');
+        const closeBtn    = document.getElementById('close_story_btn');
+        let storyTimer    = null;
+
+        document.querySelectorAll('.story_trigger').forEach(function(el) {
+            el.addEventListener('click', function() {
+                const img   = el.getAttribute('data-img');
+                const label = el.getAttribute('data-label');
+                storyImg.src    = img;
+                storyLabel.textContent = 'heitorsalvador100 • ' + label;
+                lightbox.classList.add('active');
+
+                // reinicia barra de progresso
+                storyBar.style.animation = 'none';
+                storyBar.offsetHeight; // reflow
+                storyBar.style.animation = 'story_fill 5s linear forwards';
+
+                // fecha automaticamente após 5s
+                clearTimeout(storyTimer);
+                storyTimer = setTimeout(function() {
+                    closeLightbox();
+                }, 5000);
+            });
+        });
+
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            storyImg.src = '';
+            clearTimeout(storyTimer);
+        }
+
+        closeBtn.addEventListener('click', closeLightbox);
+
+        // fechar clicando fora da caixa
+        lightbox.addEventListener('click', function(e) {
+            if (e.target === lightbox) closeLightbox();
+        });
+
+        // fechar com ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeLightbox();
+        });
+    </script>
+
+</body>
 </html>
